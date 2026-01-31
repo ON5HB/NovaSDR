@@ -1,5 +1,7 @@
 # NovaSDR
 
+All online WebSDR's are listed online so you can look at it: https://sdr-list.xyz/
+
 <p>
   <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--only-blue">
   <img alt="Backend" src="https://img.shields.io/badge/backend-Rust-orange">
