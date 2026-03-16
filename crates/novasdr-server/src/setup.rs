@@ -246,7 +246,7 @@ fn seed_receivers_from_soapysdr(receivers: &mut Value) -> anyhow::Result<()> {
                 "audio_sps": 12000,
                 "waterfall_size": 1024,
                 "waterfall_compression": "zstd",
-                "audio_compression": "adpcm",
+                "audio_compression": "opus",
                 "smeter_offset": 0,
                 "accelerator": "none",
                 "driver": { "kind": "soapysdr", "device": dev, "channel": 0, "format": "cs16" },
@@ -959,7 +959,7 @@ fn configure_receivers(root: &mut Value) -> anyhow::Result<()> {
                 "audio_sps": 12000,
                 "waterfall_size": 1024,
                 "waterfall_compression": "zstd",
-                "audio_compression": "adpcm",
+                "audio_compression": "opus",
                 "smeter_offset": 0,
                 "accelerator": "none",
                 "driver": { "kind": "stdin", "format": "u8" },
@@ -1086,6 +1086,20 @@ fn edit_receiver(receiver: &mut Value) -> anyhow::Result<()> {
             .unwrap_or(12_000),
     )?;
     input.insert("audio_sps".to_string(), json!(audio_sps));
+
+    {
+        let current = input
+            .get("audio_compression")
+            .and_then(Value::as_str)
+            .unwrap_or("opus");
+        let labels = vec!["opus".to_string(), "adpcm".to_string()];
+        let default_idx = labels.iter().position(|s| s == current).unwrap_or(0);
+        let selected = Select::new("Audio compression", labels)
+            .with_starting_cursor(default_idx)
+            .prompt()
+            .context("prompt audio compression")?;
+        input.insert("audio_compression".to_string(), json!(selected));
+    }
 
     let waterfall_size = prompt_usize(
         "Waterfall width (waterfall_size)",
